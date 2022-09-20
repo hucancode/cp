@@ -9,8 +9,8 @@ public:
             vis[i] = i;
         }
         for(const auto& x: prerequisites) {
-            next[x[0]].push_back(x[1]);
-            prev[x[1]].push_back(x[0]);
+            next[x[1]].push_back(x[0]);
+            prev[x[0]].push_back(x[1]);
         }
         while(!vis.empty()) {
             int i = 0;
