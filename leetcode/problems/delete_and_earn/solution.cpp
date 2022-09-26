@@ -3,7 +3,7 @@ public:
     int deleteAndEarn(vector<int>& nums) {
         int n = nums.size();
         int k = 1;
-        map<int, int> counts;
+        vector<int> counts(10001, 0);
         for(const auto& x: nums) {
             counts[x]++;
             k = max(k, x);
