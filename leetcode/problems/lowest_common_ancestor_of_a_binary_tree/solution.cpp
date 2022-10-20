@@ -9,34 +9,33 @@
  */
 class Solution {
 public:
+    TreeNode* dfs(TreeNode* root, TreeNode* p, TreeNode* q) {
+        // if found p or q in both leaf, return root
+        // if found p or q in only 1 left, return that leaf
+        // else return null
+        if(!root) {
+            return nullptr;
+        }
+        if(root == p) {
+            return p;
+        }
+        if(root == q) {
+            return q;
+        }
+        auto left = dfs(root->left, p, q);
+        auto right = dfs(root->right, p, q);
+        if(left && right) {
+            return root;
+        }
+        if(left) {
+            return left;
+        }
+        if(right) {
+            return right;
+        }
+        return nullptr;
+    }
     TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
-        map<TreeNode*, TreeNode*> parent;
-        queue<TreeNode*> visit;
-        visit.push(root);
-        while(!visit.empty()) {
-            auto node = visit.front();
-            if(node->left) {
-                parent[node->left] = node;
-                visit.push(node->left);
-            }
-            if(node->right) {
-                parent[node->right] = node;
-                visit.push(node->right);
-            }
-            visit.pop();
-        }
-        set<TreeNode*> path;
-        path.insert(p);
-        while(p != root) {
-            p = parent[p];
-            path.insert(p);
-        }
-        while(q != root) {
-            if(path.find(q) != path.end()) {
-                break;
-            }
-            q = parent[q];
-        }
-        return q;
+        return dfs(root, p, q);
     }
 };
