@@ -1,7 +1,7 @@
 class Solution {
 public:
     int numSquares(int n) {
-        vector<int> f(n+1, 10000);
+        vector<int> f(n+1, 1e5);
         f[0] = 0;
         for(int i = 1;i<=n;i++) {
             int k = 1;
