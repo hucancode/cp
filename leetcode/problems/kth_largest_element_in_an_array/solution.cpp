@@ -1,22 +1,29 @@
 class Solution {
 public:
-    // O(n+maxk*2)
+    // O(n)
+    inline int valToKey(int v) {
+        return v + 1e5;
+    }
+    inline int keyToVal(int k) {
+        return k - 1e5;
+    }
     int countingSort(vector<int>& nums, int k) {
-        vector<int> count(20002,0);
+        int n = 2e5+1;
+        vector<int> count(n+1,0);
         int i;
         for(const auto& val:nums) {
-            i = val + 10000;
+            i = valToKey(val);
             count[i]++;
         }
-        i = 20001;
+        i = n;
         while(k > 0) {
             k -= count[i--];
         }
-        return i-10000+1;
+        return keyToVal(i)+1;
     }
     // O(nlogn)
     int quickSort(vector<int>& nums, int k) {
-        sort(nums.begin(), nums.end(), greater<int>());
+        sort(nums.rbegin(), nums.rend());
         return nums[k-1];
     }
     int findKthLargest(vector<int>& nums, int k) {
