@@ -1,8 +1,8 @@
 class Solution {
 public:
-    bool overlap(int l1, int r1, int l2, int r2) {
-        int l = max(l1, l2);
-        int r = min(r1, r2);
+    bool overlap(vector<int>& a, vector<int>& b) {
+        int l = max(a[0], b[0]);
+        int r = min(a[1], b[1]);
         return l<=r;
     }
     void merge(vector<int>& a, vector<int>& b) {
@@ -10,16 +10,11 @@ public:
         a[1] = max(a[1],b[1]);
     }
     vector<vector<int>> merge(vector<vector<int>>& a) {
-        sort(a.begin(), a.end(), 
-            [](const vector<int>& a, const vector<int>& b) { 
-                return a[0] < b[0];
-            });
-        vector<vector<int>> ret;
-        ret.reserve(a.size());
+        sort(a.begin(), a.end());
         auto l = a.begin();
         auto r = l+1;
         while(r!= a.end()) {
-            if(overlap((*l)[0], (*l)[1], (*r)[0], (*r)[1])) {
+            if(overlap(*l, *r)) {
                 merge(*l, *r);
             } else {
                 r = a.erase(l+1,r);
