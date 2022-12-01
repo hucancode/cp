@@ -3,47 +3,45 @@ public:
     vector<int> data;
     NumArray(vector<int>& nums) {
         int n = nums.size();
-        data.resize(n+1, 0);
-        for (int i = 0; i < n; i++) {
+        data.resize(n, 0);
+        for(int i = 0;i<n;i++) {
             add(i, nums[i]);
         }
     }
-    int getParent(int i) const {
-        return i - (i & (-i));
+    int goUp(int i) {
+        // return the closest element that covers element i
+        return i | (i+1);
     }
-
-    int getNext(int i) const {
-        return i + (i & (-i));
+    int goBack(int i) {
+        // return the closest element behind i
+        // i will covers [j, i], j = i&(i+1), so the next element is j-1;
+        int j = i & (i+1);
+        return j-1;
     }
-    
-    int getSum(int i) const {
-        int sum = 0;
-        ++i;
-        while (i > 0) {
-            sum += data[i];
-            i = getParent(i);
-        }
-        return sum;
-    }
-    
-    int sumRange(int i, int j) const {
-        return getSum(j) - getSum(i-1);
-    }
-    
-    void add(int i, int v) {
-        ++i;
-        while (i < data.size()) {
-            data[i] += v;
-            i = getNext(i);
+    void add(int i, int delta) {
+        int n = data.size();
+        while(i < n) {
+            data[i] += delta;
+            i = goUp(i);
         }
     }
-    
-    int get(int i) {
-        return getSum(i) - getSum(i-1);
+    void update(int index, int val) {
+        int delta = val - sumRange(index, index);
+        add(index, delta);
     }
-    void update(int i, int v) {
-        auto delta = v - get(i);
-        add(i, delta);
+    int sum(int right) {
+        int ret = 0;
+        while(right >= 0) {
+            ret += data[right];
+            right = goBack(right);
+        }
+        return ret;
+    }
+    int sumRange(int left, int right) {
+        if(left == 0) {
+            return sum(right);
+        }
+        return sum(right) - sum(left-1);
     }
 };
 
