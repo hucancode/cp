@@ -11,40 +11,24 @@
 class Solution {
 public:
     ListNode* mergeKLists(vector<ListNode*>& lists) {
-        if(lists.size() == 0) {
-            return nullptr;
+        auto sorter = [](ListNode* a, ListNode* b) {
+            return a->val > b->val;
+        };
+        priority_queue<
+            ListNode*, 
+            vector<ListNode*>, 
+            decltype(sorter)>
+            q(sorter);
+        for(auto node: lists) {
+            if(node) q.push(node);
         }
-        if(lists.size() == 1) {
-            return lists[0];
-        }
-        for(int i = 1;i<lists.size();i++) {
-            lists[i] = mergeTwoLists(lists[i-1], lists[i]);
-        }
-        return lists[lists.size() - 1];
-    }
-    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
-        if(!list1) {
-            return list2;
-        }
-        if(!list2) {
-            return list1;
-        }
-        if(list1->val > list2->val) {
-            swap(list1, list2);
-        }
-        ListNode* root = list1;
-        while(true) {
-            if(!list2) {
-                break;
-            }
-            if(!list1->next) {
-                list1->next = list2;
-                break;
-            }
-            if(list1->next->val > list2->val) {
-                swap(list1->next, list2);
-            }
-            list1 = list1->next;
+        ListNode *root = nullptr, *current = nullptr;
+        while(!q.empty()) {
+            auto node = q.top();
+            q.pop();
+            if(current) current = current->next = node;
+            else root = current = node;
+            if(node->next) q.push(node->next);
         }
         return root;
     }
