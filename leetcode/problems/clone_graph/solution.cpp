@@ -25,32 +25,21 @@ public:
         if(!node) {
             return nullptr;
         }
-        const int n = 101;
-        Node* nodes[n];
-        Node* clones[n];
-        fill(nodes, nodes+n, nullptr);
         queue<Node*> q;
-        q.push(node);
+        map<Node*, Node*> copy;
+        copy[node] = new Node(node->val);
+        q.emplace(node);
         while(!q.empty()) {
-            int v = q.front()->val;
-            if(!nodes[v]) {
-                nodes[v] = q.front();
-                clones[v] = new Node(v);
-                for(int i = 0;i<q.front()->neighbors.size();i++) {
-                    q.push(q.front()->neighbors[i]);
-                }
-            }
+            auto root = q.front();
             q.pop();
-        }
-        for(int i = 0;i<n;i++) {
-            if(!nodes[i]) {
-                continue;
-            }
-            for(int j = 0;j<nodes[i]->neighbors.size();j++) {
-                auto v = nodes[i]->neighbors[j]->val;
-                clones[i]->neighbors.push_back(clones[v]);
+            for (auto child: root->neighbors) {
+                if(!copy[child]) {
+                    copy[child] = new Node(child->val);
+                    q.emplace(child);
+                }
+                copy[root]->neighbors.push_back(copy[child]);
             }
         }
-        return clones[1];
+        return copy[node];
     }
 };
