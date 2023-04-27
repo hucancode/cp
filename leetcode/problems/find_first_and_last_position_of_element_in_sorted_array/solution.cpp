@@ -1,16 +1,15 @@
 class Solution {
 public:
-    vector<int> searchRange(vector<int>& nums, int target)
-    {
-        vector<int> ret(2, -1);
-        auto left = lower_bound(nums.begin(), nums.end(), target);
-        if(left == nums.end() || *left != target)
-        {
-            return ret;
+    vector<int> searchRange(vector<int>& nums, int target) {
+        int n = nums.size();
+        auto l = lower_bound(nums.begin(), nums.end(), target);
+        auto r = upper_bound(l, nums.end(), target);
+        if(l == nums.end() || *l != target) {
+            return {-1, -1};
         }
-        auto right = upper_bound(left, nums.end(), target);
-        ret[0] = left - nums.begin();
-        ret[1] = right - nums.begin() - 1;
-        return ret;
+        return {
+            (int)distance(nums.begin(), l), 
+            (int)distance(nums.begin(), r) - 1,
+        };
     }
 };
