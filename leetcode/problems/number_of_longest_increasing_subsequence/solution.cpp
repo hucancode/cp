@@ -1,24 +1,4 @@
 typedef pair<int, int> pi;
-class FenwickTree {
-    vector<pi> data;
-public:
-    FenwickTree(vector<int>& nums) {
-        
-    }
-    int goUp(int i) {
-        return i | (i+1);
-    }
-    int goLeft(int i) {
-        return i & (i+1) - 1;
-    }
-    pi query(int i) {
-        return pi(0,0);
-    }
-    void update(int i, int val) {
-        
-    }
-};
-
 class Solution {
 public:
     int findNumberOfLIS(vector<int>& nums) {
