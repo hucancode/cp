@@ -1,5 +1,6 @@
 struct MyHashMap {
-    data: Vec<i32>
+    data: Vec<Vec<(i32,i32)>>,
+    hash_size: usize,
 }
 
 
@@ -11,27 +12,38 @@ impl MyHashMap {
 
     fn new() -> Self {
         Self {
-            data: vec![-1; 100003]
+            data: vec![Vec::new();1000],
+            hash_size: 1000,
         }
-    }
-
-    fn hash(&self, key: i32) -> usize {
-        (key as usize) % self.data.len()
     }
     
     fn put(&mut self, key: i32, value: i32) {
-        let key = self.hash(key);
-        self.data[key] = value;
+        let hash_key = key as usize%self.hash_size;
+        match self.data[hash_key].binary_search_by_key(&key, |&(k,v)| k) {
+            Ok(i) => self.data[hash_key][i] = (key, value),
+            Err(i) => self.data[hash_key].insert(i, (key, value))
+        }
     }
     
     fn get(&self, key: i32) -> i32 {
-        let key = self.hash(key);
-        self.data[key]
+        let hash_key = key as usize%self.hash_size;
+        match self.data[hash_key].binary_search_by_key(&key, |&(k,v)| k) {
+            Ok(i) => {
+                let (k,v) = self.data[hash_key][i];
+                v
+            },
+            Err(i) => -1
+        }
     }
     
     fn remove(&mut self, key: i32) {
-        let key = self.hash(key);
-        self.data[key] = -1;
+        let hash_key = key as usize%self.hash_size;
+        match self.data[hash_key].binary_search_by_key(&key, |&(k,v)| k) {
+            Ok(i) => {
+                self.data[hash_key].remove(i);
+            },
+            _ => (),
+        }
     }
 }
 
