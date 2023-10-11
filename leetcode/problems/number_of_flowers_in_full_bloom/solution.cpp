@@ -3,30 +3,31 @@ public:
     vector<int> fullBloomFlowers(vector<vector<int>>& flowers, vector<int>& persons) {
         int n = flowers.size();
         int m = persons.size();
-        vector<int> open(n);
-        vector<int> close(n);
+        vector<int> bloom(n);
+        vector<int> wither(n);
         for(int i = 0;i<n;i++) {
-            open[i] = close[i] = i;
+            bloom[i] = flowers[i][0];
+            wither[i] = flowers[i][1];
         }
-        auto openCmp = [&](const int& a, const int& b) {
-            return flowers[a][0] < flowers[b][0];
-        };
-        auto closeCmp = [&](const int& a, const int& b) {
-            return flowers[a][1] < flowers[b][1];
-        };
-        sort(open.begin(), open.end(), openCmp);
-        sort(close.begin(), close.end(), closeCmp);
+        sort(bloom.begin(), bloom.end());
+        sort(wither.begin(), wither.end());
         vector<int> ret(m);
+        vector<pair<int,int>> queries;
+        queries.reserve(m);
         for(int i = 0;i<m;i++) {
-            auto openCmp = [&](const int& time, const int& b) {
-                return time < flowers[b][0];
-            };
-            auto closeCmp = [&](const int& a, const int& time) {
-                return flowers[a][1] < time;
-            };
-            auto openCount = distance(open.begin(), upper_bound(open.begin(), open.end(), persons[i], openCmp));
-            auto closeCount = distance(close.begin(), lower_bound(close.begin(), close.end(), persons[i], closeCmp));
-            ret[i] = openCount - closeCount;
+            queries.push_back(make_pair(persons[i],i));
+        }
+        sort(queries.begin(), queries.end());
+        auto lastWithered = wither.begin();
+        for(auto q: queries) {
+            int time, i;
+            tie(time, i) = q;
+            lastWithered = lower_bound(lastWithered, wither.end(), time);
+            auto witheredCount = distance(wither.begin(), lastWithered);
+            auto lastBloomed = upper_bound(bloom.begin()+witheredCount, bloom.end(), time);
+            auto bloomedCount = distance(bloom.begin(), lastBloomed);
+            auto blooming = bloomedCount - witheredCount;
+            ret[i] = blooming;
         }
         return ret;
     }
