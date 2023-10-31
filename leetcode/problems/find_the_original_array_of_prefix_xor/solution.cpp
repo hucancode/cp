@@ -1,11 +1,9 @@
 class Solution {
 public:
     vector<int> findArray(vector<int>& pref) {
-      vector<int> ret(pref.size());
-      ret[0] = pref[0];
-      for(int i = 1;i<pref.size();i++) {
-        ret[i] = pref[i] ^ pref[i-1];
+      for(int i = pref.size()-1;i>0;i--) {
+        pref[i] = pref[i] ^ pref[i-1];
       }
-      return ret;
+      return pref;
     }
 };
