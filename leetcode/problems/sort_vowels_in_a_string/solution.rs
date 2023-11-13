@@ -3,10 +3,13 @@ impl Solution {
         let mut s = s.into_bytes();
         let mut idx = Vec::new();
         let mut vowels = Vec::new();
-        let mut pool = "AEIOUaeiou".as_bytes();
+        let mut is_vowel = vec![false;256];
+        for &c in "AEIOUaeiou".as_bytes() {
+            is_vowel[c as usize] = true;
+        }
         for (i,&c) in s.iter()
             .enumerate()
-            .filter(|(_,c)| pool.binary_search(c).is_ok()) {
+            .filter(|(_,&c)| is_vowel[c as usize]) {
             idx.push(i);
             vowels.push(c);
         }
