@@ -1,20 +1,16 @@
+use std::collections::VecDeque;
 impl Solution {
-    pub fn num_rescue_boats(people: Vec<i32>, limit: i32) -> i32 {
-        let mut people = people;
-        people.sort_by(|a,b|b.cmp(a));
-        let mut boat = Vec::new();
+    pub fn num_rescue_boats(mut people: Vec<i32>, limit: i32) -> i32 {
+        people.sort();
+        let mut people = VecDeque::from(people);
         let mut ret = 0;
-        for x in people.iter() {
-            if let Some(y) = boat.last() {
-                if x + y <= limit {
-                    boat.pop();
-                    ret += 1;
-                    continue;
-                }
+        while people.len() > 0 {
+            if people.back().unwrap() + people.front().unwrap() <= limit {
+                people.pop_front();
             }
-            boat.push(*x);
+            people.pop_back();
+            ret += 1;
         }
-        ret += boat.len() as i32;
-        return ret;
+        ret
     }
 }
