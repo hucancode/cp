@@ -12,7 +12,9 @@ impl Solution {
         }
         let mut vis = vec![false;n as usize];
         arr.iter()
-            .map(|x| ((x-min)/d) as usize)
+            .map(|x| x-min)
+            .filter(|x| x%d == 0)
+            .map(|x| (x/d) as usize)
             .for_each(|x| vis[x] = true);
         vis.iter().all(|&x| x)
     }
