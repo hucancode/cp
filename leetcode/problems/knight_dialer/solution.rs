@@ -24,6 +24,6 @@ impl Solution {
             }
             f = g;
         }
-        return f.iter().fold(0, |acc,x| (acc+x)%INF);
+        f.into_iter().fold(0, |acc,x| (acc+x)%INF)
     }
 }
