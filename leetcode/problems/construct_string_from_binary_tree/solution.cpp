@@ -12,19 +12,34 @@
 class Solution {
 public:
     string tree2str(TreeNode* root) {
-        if(!root) {
-            return "";
+        ostringstream ret;
+        stack<TreeNode*> st;
+        st.push(root);
+        bool first_blood = true;
+        while(!st.empty()) {
+            root = st.top();
+            st.pop();
+            if(!first_blood) {
+                ret << (root?'(':')');
+                if(root) st.push(nullptr);
+            }
+            first_blood = false;
+            if(!root) {
+                continue;
+            }
+            ret<<root->val;
+            if(!root->left && !root->right) {
+                continue;
+            }
+            if(root->right) {
+                st.push(root->right);
+            }
+            if(root->left) {
+                st.push(root->left);
+            } else {
+                ret << "()";
+            }
         }
-        stringstream ss;
-        ss<<root->val;
-        if(root->left || root->right) {
-            string s = tree2str(root->left);
-            ss<<"("<<s<<")";
-        }
-        if(root->right) {
-            string s = tree2str(root->right);
-            ss<<"("<<s<<")";
-        }
-        return ss.str();
+        return ret.str();
     }
 };
