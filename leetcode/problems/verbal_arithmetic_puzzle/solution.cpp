@@ -2,26 +2,26 @@
 class Solution {
 public:
     bool isSolvable(vector<string>& words, string result) {
-        map<char, int> weights;
-        set<char> leads;
-        auto addWeight = [&](string str, int k) {
+        vector<int> weights(26);
+        set<int> leads;
+        auto add_weight = [&](string str, int k) {
             if(str.size() > 1) {
-                leads.insert(str[0]);
+                leads.insert(str[0]-'A');
             }
             reverse(str.begin(), str.end());
             for(auto c: str) {
-                weights[c] += k;
+                weights[c-'A'] += k;
                 k *= 10;
             }
         };
         for(auto w: words) {
-            addWeight(w, 1);
+            add_weight(w, 1);
         }
-        addWeight(result, -1);
-        vector<pair<int,char>> vars;
-        for(auto kv: weights) {
-            if(kv.second == 0) continue;
-            vars.emplace_back(kv.second, kv.first);
+        add_weight(result, -1);
+        vector<pair<int,int>> vars;
+        for(int i = 0;i<26;i++) {
+            if(weights[i] == 0) continue;
+            vars.emplace_back(weights[i], i);
         }
         int n = vars.size();
         if(n == 0) {
@@ -31,16 +31,14 @@ public:
         stack<tuple<int, int, bool>> q;
         int sum = 0;
         int mask = 0;
-        auto noHope = [&](int sum, int mask, int i) {
+        auto no_hope = [&](int sum, int mask, int i) {
             if(sum > 0 || i >= n-1) {
                 return true;
             }
             for(int j = n-1;j>i;j--) {
                 for(int d = 9;d>=0;d--) {
-                    if(UNUSED(mask, d)) {
-                        sum += d*vars[j].first;
-                        mask |= 1<<d;
-                    }
+                    sum += UNUSED(mask, d)*d*vars[j].first;
+                    mask |= 1<<d;
                 }
             }
             return sum < 0;
@@ -49,8 +47,7 @@ public:
             q.emplace(0, j, true);
         }
         while(!q.empty()) {
-            int i, digit, w;
-            char c;
+            int i, digit, w, c;
             bool forward;
             tie(i, digit, forward) = q.top();
             q.pop();
@@ -61,7 +58,7 @@ public:
                 sum -= w*digit;
                 continue;
             }
-            if(digit == 0 && leads.find(c) != leads.end()) {
+            if(digit == 0 && leads.contains(c)) {
                 continue;
             }
             mask |= maski;
@@ -70,7 +67,7 @@ public:
                 return true;
             }
             q.emplace(i, digit, false);
-            if(noHope(sum, mask, i)) {
+            if(no_hope(sum, mask, i)) {
                 continue;
             }
             for(int d = 0;d<10;d++) {
