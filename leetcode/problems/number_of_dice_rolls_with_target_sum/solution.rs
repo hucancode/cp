@@ -1,26 +1,22 @@
+use std::cmp::min;
 impl Solution {
     pub fn num_rolls_to_target(n: i32, k: i32, target: i32) -> i32 {
-        const INF: i32 = 1000_000_007;
-        let n = n as usize;
-        let k = k as usize;
+        let INF = 1000_000_007;
         let target = target as usize;
-        let mut f = vec![vec![0;1+target];1+n];
-        f[0][0] = 1;
-        for i in 0..n {
-            for j in 0..=target {
-                if f[i][j] == 0 {
-                    continue;
-                }
-                for x in 1..=k {
-                    let next = j + x;
-                    if next > target {
-                        break;
-                    }
-                    f[i+1][next] += f[i][j];
-                    f[i+1][next] %= INF;
+        let k = k as usize;
+        let mut f = vec![0i64; 1 + target];
+        f[0] = 1;
+        for _ in 0..n {
+            let mut next = vec![0i64; 1 + target];
+            for x in 1..=target {
+                for y in 1..=min(x,k) {
+                    next[x] += f[x-y];
+                    next[x] %= INF;
                 }
             }
+            f = next;
+            //println!("({f:?})");
         }
-        return f[n][target];
+        return f[target] as i32;
     }
 }
