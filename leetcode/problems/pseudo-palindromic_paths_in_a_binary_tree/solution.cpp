@@ -11,56 +11,29 @@
  */
 class Solution {
 public:
-    void print(vector<int>& counts) {
-        for(int i = 0;i<counts.size();i++) {
-            if(counts[i] == 0) {
-                continue;
-            }
-            cout<<"key "<<i<<" count "<<counts[i]<<endl; 
-        }
-    }
-    bool palindrome(vector<int>& counts) {
-        int odd = 0;
-        for(const auto& x: counts) {
-            if(x%2 == 1) {
-                odd++;
-                if(odd > 1) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
     int pseudoPalindromicPaths (TreeNode* root) {
-        if(!root) {
-            return 0;
-        }
-        set<TreeNode*> vis;
-        stack<TreeNode*> st;
-        st.push(root);
-        vector<int> counts(10, 0);
+        stack<TreeNode*> q;
+        vector<int> path;
+        vector<int> count(10, 0);
         int ret = 0;
-        while(!st.empty()) {
-            auto node = st.top();
-            st.pop();
-            if(vis.find(node) != vis.end()) {
-                counts[node->val]--;
+        q.push(root);
+        while(!q.empty()) {
+            auto node = q.top();
+            q.pop();
+            if(!node) {
+                auto x = path.back();
+                path.pop_back();
+                count[x]--;
                 continue;
             }
-            //cout<<"check "<<node->val<<endl;
-            counts[node->val]++;
-            //print(counts);
-            vis.insert(node);
-            st.push(node);
-            if(palindrome(counts) && !node->left && !node->right) {
-                //cout<<"palindrome !"<<endl;
+            q.push(nullptr);
+            path.push_back(node->val);
+            count[node->val]++;
+            if(node->left) q.push(node->left);
+            if(node->right) q.push(node->right);
+            if(!node->left && !node->right && 
+                count_if(count.begin(), count.end(), [](auto x) { return x%2; }) <= 1) {
                 ret++;
-            }
-            if(node->right) {
-                st.push(node->right);
-            }
-            if(node->left) {
-                st.push(node->left);
             }
         }
         return ret;
