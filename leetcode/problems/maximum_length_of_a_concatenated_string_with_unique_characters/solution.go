@@ -16,18 +16,18 @@ func maxLength(arr []string) int {
     }
     var n = 1<<len(masks)
     var f = make([]int, n)
-    for picked := 0; picked < n; picked++ {
-        for i := 0; i< len(masks); i++ {
-            if masks[i] & f[picked] != 0 {
+    for i, picked := range f {
+        for j, picking := range masks {
+            if picking & picked != 0 {
                 continue
             }
-            var next = picked | (1<<i)
-            f[next] = f[picked] | masks[i]
+            var next = i | (1<<j)
+            f[next] = picking | picked
         }
     }
     var ret = 0
-    for i := 0; i < n; i++ {
-        var k = bits.OnesCount(uint(f[i]))
+    for _, mask := range f {
+        var k = bits.OnesCount(uint(mask))
         if k > ret {
             ret = k
         }
