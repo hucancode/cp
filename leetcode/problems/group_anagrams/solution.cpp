@@ -1,22 +1,14 @@
-class Solution
-{
+class Solution {
 public:
-    vector<vector<string>> groupAnagrams(vector<string>& strs)
-    {
-        unordered_map<string, vector<string>> hash;
-        for(auto& str:strs)
-        {
-            string key = str;
-            sort(key.begin(), key.end());
-            hash[key].push_back(str);
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        map<vector<int>, vector<string>> f;
+        for(auto s: strs) {
+            vector<int> k(26);
+            for(auto c: s) k[c-'a']++;
+            f[k].push_back(s);
         }
         vector<vector<string>> ret;
-        ret.reserve(hash.size());
-        for(auto& item: hash)
-        {
-            ret.push_back(item.second);
-        }
+        for(auto kv: f) ret.push_back(kv.second);
         return ret;
     }
-    
 };
