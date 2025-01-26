@@ -1,21 +1,25 @@
 module main
+
 import strings
 
 fn dfs(mat []string, starti int, startj int, targeti int, targetj int) bool {
 	c := mat[starti][startj]
-	if c == `.`  {
+	if c == `.` {
 		return false
 	}
-	println('finding way from $starti $startj ($c) to $targeti $targetj')
+	println('finding way from ${starti} ${startj} (${c}) to ${targeti} ${targetj}')
 
 	mut vis := [][]bool{len: mat.len, init: []bool{len: mat[0].len}}
 	mut q := [][2]int{}
 	q << [starti, startj]!
 
 	valid_moves := [
-		[-1, 0], [1, 0],
-		[0, -1], [0, 1],
-		[-1, 1], [1, -1]
+		[-1, 0],
+		[1, 0],
+		[0, -1],
+		[0, 1],
+		[-1, 1],
+		[1, -1],
 	]
 
 	for q.len > 0 {
@@ -58,18 +62,18 @@ fn winner(board []string) ?rune {
 	m := mat[0].len
 
 	for i := 0; i < n; i++ {
-		if dfs(mat, i, 0, -1, m-1) {
-            println('returning ${mat[i][0]}')
+		if dfs(mat, i, 0, -1, m - 1) {
+			println('returning ${mat[i][0]}')
 			return mat[i][0]
 		}
 	}
 
 	for j := 0; j < m; j++ {
-		if dfs(mat, 0, j, n-1, -1) {
-            println('returning ${mat[0][j]}')
+		if dfs(mat, 0, j, n - 1, -1) {
+			println('returning ${mat[0][j]}')
 			return mat[0][j]
 		}
 	}
-    println('returning none')
+	println('returning none')
 	return none
 }

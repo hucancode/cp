@@ -1,4 +1,5 @@
 module main
+
 fn test_an_empty_board_has_no_winner() {
 	board := [
 		'. . . . .',
