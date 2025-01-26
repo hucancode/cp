@@ -7,6 +7,9 @@ import (
 
 func evaluateMath(stack *[]int, cmd string) error {
 	n := len(*stack)
+	if n < 2 {
+		return fmt.Errorf("not enough element in the stack %v", stack)
+	}
 	a := (*stack)[n-2]
 	b := (*stack)[n-1]
 	*stack = (*stack)[:n-2]
@@ -43,51 +46,41 @@ func evaluate(stack *[]int, program []string) error {
 	fmt.Printf("evaluating %v\n", program)
 	for _, cmd := range program {
 		n := len(*stack)
-		if cmd == "+" || cmd == "-" || cmd == "*" || cmd == "/" {
-			if len(*stack) < 2 {
-				return fmt.Errorf("not enough element in the stack %v", stack)
-			}
+		switch strings.ToLower(cmd) {
+		case "+", "-", "*", "/":
 			err := evaluateMath(stack, cmd)
 			if err != nil {
 				return err
 			}
-			continue
-		}
-		cmd = strings.ToLower(cmd)
-		if cmd == "dup" {
+		case "dup":
 			if n == 0 {
 				return fmt.Errorf("empty stack")
 			}
 			*stack = append(*stack, (*stack)[n-1])
-			continue
-		}
-		if cmd == "drop" {
+		case "drop":
 			if n == 0 {
 				return fmt.Errorf("empty stack")
 			}
 			*stack = (*stack)[:n-1]
-			continue
-		}
-		if cmd == "swap" {
+		case "swap":
 			if n < 2 {
 				return fmt.Errorf("not enough element in the stack %v", stack)
 			}
 			(*stack)[n-1], (*stack)[n-2] = (*stack)[n-2], (*stack)[n-1]
-			continue
-		}
-		if cmd == "over" {
+		case "over":
 			if n < 2 {
 				return fmt.Errorf("not enough element in the stack %v", stack)
 			}
 			*stack = append(*stack, (*stack)[n-2])
 			continue
+		default:
+			var i int
+			_, err := fmt.Sscanf(cmd, "%d", &i)
+			if err != nil {
+				return fmt.Errorf("invalid command %s", cmd)
+			}
+			*stack = append(*stack, i)
 		}
-		var i int
-		_, err := fmt.Sscanf(cmd, "%d", &i)
-		if err != nil {
-			return fmt.Errorf("invalid command %s", cmd)
-		}
-		*stack = append(*stack, i)
 	}
 	return nil
 }
