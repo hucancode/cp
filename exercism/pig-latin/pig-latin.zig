@@ -1,28 +1,14 @@
 const std = @import("std");
 
-fn isVowel(c: u8) bool {
-    return c == 'a' or c == 'i' or c == 'u' or c == 'e' or c == 'o';
-}
-
 fn indexOfVowel(word: []const u8) ?usize {
-    const n = word.len;
-    for (0..n) |i| {
-        if (isVowel(word[i])) {
-            return i;
-        }
-    }
-    return null;
+    return std.mem.indexOfAny(u8, word, "aiueo");
 }
 
 fn indexOfNoVowel(haysack: []const u8, needle: []const u8) ?usize {
-    const n = haysack.len;
-    for (0..n) |i| {
-        if (isVowel(haysack[i])) {
-            return null;
-        }
-        if (std.mem.startsWith(u8, haysack[i..], needle)) {
-            return i;
-        }
+    const i = std.mem.indexOfAny(u8, haysack, "aiueo");
+    const j = std.mem.indexOf(u8, haysack, needle);
+    if (i == null or (j != null and j.? < i.?)) {
+        return j;
     }
     return null;
 }
