@@ -1,11 +1,12 @@
 const std = @import("std");
+const vowels = "aeiou";
 
 fn indexOfVowel(word: []const u8) ?usize {
-    return std.mem.indexOfAny(u8, word, "aiueo");
+    return std.mem.indexOfAny(u8, word, vowels);
 }
 
 fn indexOfNoVowel(haysack: []const u8, needle: []const u8) ?usize {
-    const i = std.mem.indexOfAny(u8, haysack, "aiueo");
+    const i = std.mem.indexOfAny(u8, haysack, vowels);
     const j = std.mem.indexOf(u8, haysack, needle);
     if (i == null or (j != null and j.? < i.?)) {
         return j;
