@@ -193,7 +193,24 @@ func findZebraOwner(houses [5][5]int) int {
 	return -1
 }
 
+func next(i, j, v int) (error, int, int, int) {
+	v++
+	if v >= 5 {
+		v = 0
+		j++
+	}
+	if j >= 5 {
+		j = 0
+		i++
+	}
+	if i >= 5 {
+		return fmt.Errorf("cant go next"), i, j, v
+	}
+	return nil, i, j, v
+}
+
 func SolvePuzzle() Solution {
+	loop := 0
 	houses := [5][5]int{
 		{5, 5, 5, 5, 5},
 		{5, 5, 5, 5, 5},
@@ -201,39 +218,54 @@ func SolvePuzzle() Solution {
 		{5, 5, 5, 5, 5},
 		{5, 5, 5, 5, 5},
 	}
+	taken := [5][5]bool{
+		{false, false, false, false, false},
+		{false, false, false, false, false},
+		{false, false, false, false, false},
+		{false, false, false, false, false},
+		{false, false, false, false, false},
+	}
 	q := make([][3]int, 0)
 	q = append(q, [3]int{0, 0, 0})
 	for len(q) > 0 {
-		i, j, v := q[0][0], q[0][1], q[0][2]
-		q = q[:len(q)-1]
+		loop++
+		if loop > 1000000 {
+			fmt.Println("looping too much!")
+			break
+		}
+		n := len(q) - 1
+		i, j, v := q[n][0], q[n][1], q[n][2]
+		q = q[:n]
+		fmt.Printf("check %d %d %d\n", i, j, v)
+		if v >= 5 {
+			fmt.Printf("reset %d %d %d\n", i, j, v)
+			taken[j][v%5] = false
+			houses[i][j] = 5
+			err, i, j, v := next(i, j, v)
+			if err != nil {
+				q = append(q, [3]int{i, j, v})
+			}
+			continue
+		}
+		if taken[j][v] {
+			continue
+		}
+		taken[j][v] = true
+		q = append(q, [3]int{i, j, v + 5})
 		houses[i][j] = v
-		if valid(houses) {
-			if i == 4 && j == 4 && compilant(houses) {
-				waterDrinker := findWaterDrinker(houses)
-				zebraOwner := findZebraOwner(houses)
-				return Solution{
-					DrinksWater: NATIONS[houses[waterDrinker][NATION_IDX]],
-					OwnsZebra:   NATIONS[houses[zebraOwner][NATION_IDX]],
-				}
+		fmt.Printf("found a valid houses %v\n", houses)
+		if i == 4 && j == 4 && compilant(houses) {
+			waterDrinker := findWaterDrinker(houses)
+			zebraOwner := findZebraOwner(houses)
+			return Solution{
+				DrinksWater: NATIONS[houses[waterDrinker][NATION_IDX]],
+				OwnsZebra:   NATIONS[houses[zebraOwner][NATION_IDX]],
 			}
-			if v < 4 {
-				q = append(q, [3]int{i, j, v + 1})
-			}
-			j++
-			if j == 5 {
-				j = 0
-				i++
-			}
-			if i == 5 {
-				continue
-			}
-			q = append(q, [3]int{i, j, 0})
-		} else {
-			if v < 4 {
-				q = append(q, [3]int{i, j, v + 1})
-			} else {
-				houses[i][j] = 5
-			}
+		}
+		err, i, j, v := next(i, j, v)
+		if err != nil {
+			fmt.Printf("next %d %d %d\n", i, j, v)
+			q = append(q, [3]int{i, j, v})
 		}
 	}
 	fmt.Println("no solution!")
