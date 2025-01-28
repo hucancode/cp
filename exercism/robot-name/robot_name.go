@@ -30,29 +30,29 @@ func (r *Robot) Reset() {
 func randomName() string {
 	letters := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	numbers := "0123456789"
-	ab := randomStringFromSet(letters, 2)
-	iii := randomStringFromSet(numbers, 3)
+	ab := randomPick(2, letters)
+	iii := randomPick(3, numbers)
 	return ab + iii
 }
 
-func randomStringFromSet(set string, length int) string {
+func randomPick(length int, pool string) string {
 	var sb strings.Builder
+	n := len(pool)
 	for i := 0; i < length; i++ {
-		sb.WriteByte(set[rand.Intn(len(set))])
+		sb.WriteByte(pool[rand.Intn(n)])
 	}
 	return sb.String()
 }
 
-// createName generates a unique name for a robot, ensuring no duplicates.
 func createName() string {
 	maxTries := 1000
 	for i := 0; i < maxTries; i++ {
-		name := randomName()
-		if _, ok := names[name]; ok {
+		key := randomName()
+		if _, ok := names[key]; ok {
 			continue
 		}
-		names[name] = true
-		return name
+		names[key] = true
+		return key
 	}
 	return ""
 }
