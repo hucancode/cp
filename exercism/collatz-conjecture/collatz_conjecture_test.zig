@@ -28,8 +28,8 @@ test "large number" {
     const actual = try collatz_conjecture.steps(1_000_000_000_000);
     try testing.expectEqual(expected, actual);
 }
-test "overflow" {
-    const expected = ComputationError.IllegalArgument;
+test "number too large it overflow" {
+    const expected = ComputationError.IntegerOverflow;
     const actual = collatz_conjecture.steps(std.math.maxInt(usize));
     try testing.expectError(expected, actual);
 }

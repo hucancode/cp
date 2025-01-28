@@ -1,8 +1,6 @@
 const std = @import("std");
 
-pub const ComputationError = error{
-    IllegalArgument,
-};
+pub const ComputationError = error{ IllegalArgument, IntegerOverflow };
 
 pub fn steps(number: usize) anyerror!usize {
     if (number == 0) {
@@ -16,7 +14,7 @@ pub fn steps(number: usize) anyerror!usize {
             n /= 2;
         } else {
             if (n > (std.math.maxInt(usize) - 1) / 3) {
-                return ComputationError.IllegalArgument;
+                return ComputationError.IntegerOverflow;
             }
             n = 3 * n + 1;
         }
