@@ -10,6 +10,7 @@ func TestSolvePuzzle(t *testing.T) {
 			expected, actual)
 	}
 }
+
 func BenchmarkScore(b *testing.B) {
 	if testing.Short() {
 		b.Skip("skipping benchmark in short mode.")
