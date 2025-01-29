@@ -2,7 +2,6 @@ package robotname
 
 import "core:fmt"
 import "core:math/rand"
-import "core:strings"
 
 RobotStorage :: struct {
 	names: map[string]bool,
@@ -13,15 +12,17 @@ Robot :: struct {
 }
 
 Error :: enum {
-	None,
 	CouldNotCreateName,
 }
 
-new_storage :: proc() -> RobotStorage {
+make_storage :: proc() -> RobotStorage {
 	return RobotStorage{make(map[string]bool)}
 }
 delete_storage :: proc(storage: ^RobotStorage) {
-	delete_map(storage.names)
+	for k in storage.names {
+		delete(k)
+	}
+	delete(storage.names)
 }
 
 new_robot :: proc(storage: ^RobotStorage) -> (Robot, Error) {
@@ -32,7 +33,7 @@ new_robot :: proc(storage: ^RobotStorage) -> (Robot, Error) {
 reset :: proc(storage: ^RobotStorage, r: ^Robot) {
 	delete_key(&storage.names, r.name)
 	name, err := create_name(storage)
-	if err != Error.None {
+	if err != nil {
 		return
 	}
 	delete_string(r.name)
@@ -42,14 +43,16 @@ reset :: proc(storage: ^RobotStorage, r: ^Robot) {
 letters := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 numbers := "0123456789"
 random_name :: proc() -> string {
-	builder := strings.builder_make_len_cap(0, 5)
+	ret := make([]u8, 5)
 	for i in 0 ..< 2 {
-		strings.write_byte(&builder, letters[rand.int_max(len(letters))])
+		k := rand.int_max(len(letters))
+		ret[i] = letters[k]
 	}
-	for i in 0 ..< 3 {
-		strings.write_byte(&builder, numbers[rand.int_max(len(numbers))])
+	for i in 2 ..< 5 {
+		k := rand.int_max(len(numbers))
+		ret[i] = numbers[k]
 	}
-	return strings.to_string(builder)
+	return string(ret)
 }
 
 create_name :: proc(storage: ^RobotStorage) -> (string, Error) {
@@ -61,7 +64,7 @@ create_name :: proc(storage: ^RobotStorage) -> (string, Error) {
 			continue
 		}
 		storage.names[key] = true
-		return key, Error.None
+		return key, nil
 	}
 	return "", Error.CouldNotCreateName
 }
