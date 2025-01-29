@@ -62,11 +62,13 @@ test_multiple_names :: proc(t: ^testing.T) {
 		seen[r.name] = true
 	}
 }
-fill_names :: proc(storage: ^RobotStorage) {
+
+dfs_fill_names :: proc(storage: ^RobotStorage) {
 	GO_BACK_SENTINEL := '-'
+	NAME_LENGTH := 5
 	stack := make([dynamic]rune)
 	defer delete(stack)
-	current := make([]rune, 5)
+	current := make([]rune, NAME_LENGTH)
 	defer delete(current)
 	for c := 'A'; c <= 'Z'; c += 1 {
 		append(&stack, c)
@@ -81,7 +83,7 @@ fill_names :: proc(storage: ^RobotStorage) {
 		}
 		current[depth] = ch
 		depth += 1
-		if depth == 5 {
+		if depth == NAME_LENGTH {
 			key := utf8.runes_to_string(current)
 			storage.names[key] = true
 			fmt.printfln("reserve '%s',", key)
@@ -100,11 +102,12 @@ fill_names :: proc(storage: ^RobotStorage) {
 		}
 	}
 }
+
 @(test)
 test_collisions :: proc(t: ^testing.T) {
 	storage := new_storage()
 	defer delete_storage(&storage)
-	fill_names(&storage)
+	dfs_fill_names(&storage)
 	r, e := new_robot(&storage)
 	testing.expect_value(t, e, Error.CouldNotCreateName)
 }
