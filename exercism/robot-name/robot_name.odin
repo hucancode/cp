@@ -4,7 +4,9 @@ import "core:fmt"
 import "core:math/rand"
 import "core:strings"
 
-names := make(map[string]bool)
+RobotStorage :: struct {
+	names: map[string]bool,
+}
 
 Robot :: struct {
 	name: string,
@@ -15,19 +17,26 @@ Error :: enum {
 	CouldNotCreateName,
 }
 
-get_name :: proc(r: ^Robot) -> (string, Error) {
-	if len(r.name) == 0 {
-		r.name = create_name()
-	}
-	if len(r.name) == 0 {
-		return r.name, Error.CouldNotCreateName
-	}
-	return r.name, Error.None
+new_storage :: proc() -> RobotStorage {
+	return RobotStorage{make(map[string]bool)}
+}
+delete_storage :: proc(storage: ^RobotStorage) {
+	delete_map(storage.names)
 }
 
-reset :: proc(r: ^Robot) {
-	delete_key(&names, r.name)
-	r.name = create_name()
+new_robot :: proc(storage: ^RobotStorage) -> (Robot, Error) {
+	name, e := create_name(storage)
+	return Robot{name}, e
+}
+
+reset :: proc(storage: ^RobotStorage, r: ^Robot) {
+	delete_key(&storage.names, r.name)
+	name, err := create_name(storage)
+	if err != Error.None {
+		return
+	}
+	delete_string(r.name)
+	r.name = name
 }
 
 letters := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -43,16 +52,16 @@ random_name :: proc() -> string {
 	return strings.to_string(builder)
 }
 
-create_name :: proc() -> string {
-	max_tries := 1000
+create_name :: proc(storage: ^RobotStorage) -> (string, Error) {
+	max_tries := 100
 	for i in 0 ..< max_tries {
 		key := random_name()
-		if names[key] {
+		if key in storage.names {
 			delete(key)
 			continue
 		}
-		names[key] = true
-		return key
+		storage.names[key] = true
+		return key, Error.None
 	}
-	return ""
+	return "", Error.CouldNotCreateName
 }
