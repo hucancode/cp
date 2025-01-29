@@ -63,22 +63,18 @@ test_multiple_names :: proc(t: ^testing.T) {
 	}
 }
 fill_names :: proc(storage: ^RobotStorage) {
-	State :: struct {
-		ch:      rune,
-		go_back: bool,
-	}
-	stack: [dynamic]State
+	GO_BACK_SENTINEL := '-'
+	stack := make([dynamic]rune)
 	defer delete(stack)
 	current := make([]rune, 5)
 	defer delete(current)
 	for c := 'A'; c <= 'Z'; c += 1 {
-		append(&stack, State{c, false})
+		append(&stack, c)
 	}
 	depth := 0
 	for len(stack) > 0 {
-		state := pop(&stack)
-		ch := state.ch
-		go_back := state.go_back
+		ch := pop(&stack)
+		go_back := ch == GO_BACK_SENTINEL
 		if go_back {
 			depth -= 1
 			continue
@@ -92,14 +88,14 @@ fill_names :: proc(storage: ^RobotStorage) {
 			depth -= 1
 			continue
 		}
-		append(&stack, State{ch, true})
+		append(&stack, GO_BACK_SENTINEL)
 		if depth < 2 {
 			for c := 'A'; c <= 'Z'; c += 1 {
-				append(&stack, State{c, false})
+				append(&stack, c)
 			}
 		} else {
 			for c := '0'; c <= '9'; c += 1 {
-				append(&stack, State{c, false})
+				append(&stack, c)
 			}
 		}
 	}
