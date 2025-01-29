@@ -1,5 +1,7 @@
 package main
+import "core:fmt"
 import "core:math/rand"
+import "core:strings"
 import "core:testing"
 
 letters := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -27,7 +29,7 @@ create_name :: proc(seen: ^map[string]bool) -> string {
 	return ""
 }
 
-@(test)
+//@(test)
 test_generate_2_names :: proc(t: ^testing.T) {
 	seen := make(map[string]bool)
 	defer delete(seen)
@@ -40,11 +42,12 @@ test_generate_2_names :: proc(t: ^testing.T) {
 }
 
 dfs_fill_names :: proc(names: ^map[string]bool) {
-	GO_BACK_SENTINEL := u8('-')
-	NAME_LENGTH := 5
+	GO_BACK_SENTINEL :: u8('-')
+	NAME_LENGTH :: 5
 	LETTERS := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	NUMBERS := "0123456789"
-	stack := make([dynamic]u8)
+	cap := len(LETTERS) * NAME_LENGTH
+	stack := make_dynamic_array_len_cap([dynamic]u8, 0, cap)
 	defer delete(stack)
 	current := make([]u8, NAME_LENGTH)
 	defer delete(current)
@@ -63,7 +66,11 @@ dfs_fill_names :: proc(names: ^map[string]bool) {
 		depth += 1
 		if depth == NAME_LENGTH {
 			key := string(current)
-			names[key] = true
+			names[strings.clone(key)] = true
+			n := len(names)
+			if n % 8673 == 0 {
+				fmt.printfln("[%d] '%s',", n, key)
+			}
 			depth -= 1
 			continue
 		}
