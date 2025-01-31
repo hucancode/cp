@@ -1,6 +1,7 @@
-const std = @import("std");
+const ascii = @import("std").ascii;
+const mem = @import("std").mem;
 pub fn response(s: []const u8) []const u8 {
-    const normalized = std.mem.trim(u8, s, "\r\n\t ");
+    const normalized = mem.trim(u8, s, "\r\n\t ");
     if (normalized.len == 0) {
         return "Fine. Be that way!";
     }
@@ -8,9 +9,9 @@ pub fn response(s: []const u8) []const u8 {
     var asciiCount: u32 = 0;
     var capitalCount: u32 = 0;
     for (normalized) |c| {
-        if (std.ascii.isAlphabetic(c)) {
+        if (ascii.isAlphabetic(c)) {
             asciiCount += 1;
-            if (std.ascii.isUpper(c)) {
+            if (ascii.isUpper(c)) {
                 capitalCount += 1;
             }
         }
