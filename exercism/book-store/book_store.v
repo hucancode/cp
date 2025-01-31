@@ -1,4 +1,5 @@
 module main
+import math
 
 fn calculate(counts []int) int {
     mut total := 0.0
@@ -22,26 +23,13 @@ fn calculate(counts []int) int {
     return int(total)
 }
 fn total(basket []int) int {
-  mut count_by_title := map[int]int{}
+  mut counts := [0,0,0,0,0]
   for i := 0; i < basket.len; i++ {
-    count_by_title[basket[i]] += 1
+    counts[basket[i]-1] += 1
   }
-  mut counts := count_by_title.values()
   counts.sort()
-  n := counts.len
-  if n == 5 {
-    // there are a steep increase when we get 4 books so the best deal is to get 4 books as much as possible
-		// try to redistribute books so group of 4 get maximum length
-    delta := counts[2] - counts[1]
-    if delta > 0 {
-      if counts[0] > delta {
-        counts[0] -= delta
-        counts[1] += 0
-      } else {
-        counts[1] += counts[0]
-        counts[0] = 0
-      }
-    }
-  }
+  delta := math.min(counts[0], counts[2] - counts[1])
+  counts[0] -= delta
+  counts[1] += delta
   return calculate(counts)
 }

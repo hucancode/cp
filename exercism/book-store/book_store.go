@@ -11,20 +11,6 @@ func calculate(counts []int) int {
 	n := 0
 	ret := float32(0.0)
 	fmt.Printf("counts %v\n", counts)
-	if len(counts) == 5 {
-		// there are a steep increase when we get 4 books so the best deal is to get 4 books as much as possible
-		// try to redistribute books so group of 4 get maximum length
-		delta := counts[2] - counts[1]
-		if delta > 0 {
-			if counts[0] > delta {
-				counts[0] -= delta
-				counts[1] += delta
-			} else {
-				counts[1] += counts[0]
-				counts[0] = 0
-			}
-		}
-	}
 	for i, x := range counts {
 		m := len(counts) - i
 		x -= n
@@ -49,17 +35,13 @@ func calculate(counts []int) int {
 
 }
 func Cost(books []int) int {
-	countByTitle := make(map[int]int)
+	counts := make([]int, 5)
 	for _, book := range books {
-		if _, ok := countByTitle[book]; !ok {
-			countByTitle[book] = 0
-		}
-		countByTitle[book]++
-	}
-	counts := make([]int, 0)
-	for _, count := range countByTitle {
-		counts = append(counts, count)
+		counts[book-1]++
 	}
 	sort.Ints(counts)
+	delta := min(counts[0], counts[2]-counts[1])
+	counts[0] -= delta
+	counts[1] += delta
 	return calculate(counts)
 }
