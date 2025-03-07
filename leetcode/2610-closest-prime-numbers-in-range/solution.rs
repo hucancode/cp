@@ -1,10 +1,8 @@
 impl Solution {
     pub fn closest_primes(left: i32, right: i32) -> Vec<i32> {
-        let right = right as usize;
-        let left = left as usize;
-        let mut is_prime = vec![true; right + 1];
+        let mut is_prime = vec![true; right as usize + 1];
         for i in 2..right {
-            if !is_prime[i] {
+            if !is_prime[i as usize] {
                 continue;
             }
             let mut k = 2;
@@ -13,14 +11,14 @@ impl Solution {
                 if j > right {
                     break;
                 }
-                is_prime[j] = false;
+                is_prime[j as usize] = false;
                 k += 1;
             }
         }
-        let primes: Vec<usize> = is_prime.into_iter()
+        let primes: Vec<_> = is_prime.into_iter()
             .enumerate()
             .skip(2)
-            .filter_map(|(i,x)| if x {Some(i)} else {None})
+            .filter_map(|(i,x)| if x {Some(i as i32)} else {None})
             .collect();
         let i = primes.partition_point(|&x| x < left);
         let j = primes.partition_point(|&x| x <= right);
@@ -31,6 +29,6 @@ impl Solution {
                 }
                 return a;
             })
-            .map_or(vec![-1,-1], |a| vec![a[0] as i32, a[1] as i32])
+            .map_or(vec![-1,-1], |a| vec![a[0], a[1]])
     }
 }
