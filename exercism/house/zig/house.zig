@@ -6,13 +6,16 @@ const Subject = struct {
     verb: []const u8,
     
     pub fn intro(self: Subject, buffer: []u8) usize {
-        return (bufPrint(buffer, "This is the {s}", .{ self.name }) catch buffer[0..0]).len;
+        const written = bufPrint(buffer, "This is the {s}", .{ self.name }) catch unreachable;
+        return written.len;
     }
     pub fn act(self: Subject, buffer: []u8, object: []const u8) usize {
-        return (bufPrint(buffer, " that {s} the {s}", .{ self.verb, object }) catch buffer[0..0]).len;
+        const written = bufPrint(buffer, " that {s} the {s}", .{ self.verb, object }) catch unreachable;
+        return written.len;
     }
     pub fn outro(buffer: []u8) usize {
-        return (bufPrint(buffer, ".\n", .{}) catch buffer[0..0]).len;
+        const written = bufPrint(buffer, ".\n", .{}) catch unreachable;
+        return written.len;
     }
 };
 
