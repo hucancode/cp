@@ -13,10 +13,10 @@ distance:
     cmp ch, 0               ; if ch == 0 return -1
     je .bad_length
     cmp cl, ch
-    je .next                ; if cl == ch continue
+    je .continue            ; if cl == ch continue
     inc eax                 ; ret++
 
-.next:
+.continue:
     inc rbx                 ; i++
     jmp .loop
 
