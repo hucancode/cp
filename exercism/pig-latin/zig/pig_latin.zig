@@ -1,38 +1,55 @@
-const std = @import("std");
-const vowels = "aeiou";
+const mem = @import("std").mem;const debug = @import("std").debug;
+const ArrayList = @import("std").ArrayList;
 
-fn indexOfVowel(word: []const u8) ?usize {
-    return std.mem.indexOfAny(u8, word, vowels);
+fn isVowel(c: u8) bool {
+    return c == 'a' or c == 'i' or c == 'u' or c == 'e' or c == 'o'; 
 }
 
-fn indexOfNoVowel(haysack: []const u8, needle: []const u8) ?usize {
-    const i = std.mem.indexOfAny(u8, haysack, vowels);
-    const j = std.mem.indexOf(u8, haysack, needle);
-    if (i == null or (j != null and j.? < i.?)) {
-        return j;
+fn indexOfVowel(word: []const u8) ?usize {
+    const n = word.len;
+    for (0..n) |i| {
+        if (isVowel(word[i])) {
+            return i;
+        }
     }
     return null;
 }
 
-pub fn translate(allocator: std.mem.Allocator, phrase: []const u8) std.mem.Allocator.Error![]u8 {
-    var it = std.mem.splitScalar(u8, phrase, ' ');
-    var ret = std.ArrayList(u8).init(allocator);
+pub fn translate(allocator: mem.Allocator, phrase: []const u8) mem.Allocator.Error![]u8 {
+    var it = mem.splitScalar(u8, phrase, ' ');
+    var ret = ArrayList(u8).init(allocator);
     while (it.next()) |word| {
-        const beginWithXrYt = std.mem.startsWith(u8, word, "xr") or std.mem.startsWith(u8, word, "yt");
-        const quIdx = indexOfNoVowel(word, "qu");
-        const yIdx = indexOfNoVowel(word, "y");
-        const vowelIdx = indexOfVowel(word);
-        var n: usize = 0;
-        if (quIdx != null) {
-            n = quIdx.? + 2;
-        } else if (yIdx != null and yIdx.? > 0) {
-            n = yIdx.?;
-        } else if (!beginWithXrYt and vowelIdx != null) {
-            n = vowelIdx.?;
+        const beginWithVowel = word.len >= 1 and isVowel(word[0]);
+        const beginWithXrYt = word.len >= 2 and (
+            mem.eql(u8, word[0..2], "xr") or 
+            mem.eql(u8, word[0..2], "yt")
+        );
+        const quIndex = mem.indexOf(u8, word, "qu");
+        const yIndex = mem.indexOf(u8, word, "y");
+        const noVowelBeforeQu = quIndex != null and (yIndex == null or yIndex.? > quIndex.?) and indexOfVowel(word[0..quIndex.?]) == null;
+        const noVowelBeforeY = yIndex != null and yIndex.? > 0 and (quIndex == null or quIndex.? > yIndex.?) and indexOfVowel(word[0..yIndex.?]) == null;
+        const vowelIndex = indexOfVowel(word);
+        
+        if (noVowelBeforeQu) {
+            const n = quIndex.?+2;
+            try ret.appendSlice(word[n..]);
+            try ret.appendSlice(word[0..n]);
+            try ret.appendSlice("ay");
+        } else if (noVowelBeforeY) {
+            const n = yIndex.?;
+            try ret.appendSlice(word[n..]);
+            try ret.appendSlice(word[0..n]);
+            try ret.appendSlice("ay");
+        } else if (beginWithVowel or beginWithXrYt) {
+            try ret.appendSlice(word);
+            try ret.appendSlice("ay");
+        } else if (vowelIndex != null) {
+            const n = vowelIndex.?;
+            try ret.appendSlice(word[n..]);
+            try ret.appendSlice(word[0..n]);  
+            try ret.appendSlice("ay");
         }
-        try ret.appendSlice(word[n..]);
-        try ret.appendSlice(word[0..n]);
-        try ret.appendSlice("ay ");
+        try ret.append(' ');
     }
     _ = ret.pop();
     return try ret.toOwnedSlice();
