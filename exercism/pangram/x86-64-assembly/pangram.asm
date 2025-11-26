@@ -12,7 +12,7 @@ is_pangram:
     cmp cl, 'z'
     ja .next
     sub cl, 'a'    ; a-z to 0-25
-    bts eax, ecx   ; Set bit at position ecx
+    bts eax, ecx   ; set bit at position ecx, cx = lower 16 of ecx, cl = lower 8 of cx
 .next:
     inc rdi
     jmp .loop
