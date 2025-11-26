@@ -15,11 +15,9 @@ pub fn countWords(allocator: mem.Allocator, s: []const u8) !std.StringHashMap(u3
         const v = ret.get(normalized);
         if (v == null) {
             try ret.put(normalized, 1);
-            // we need to not free `normalized` here, it is needed in the hashmap
         } else {
             try ret.put(normalized, v.? + 1);
             allocator.free(normalized);
-            // a copy of `normalized` is freed here, the hashmap has it own copy
         }
     }
     return ret;
