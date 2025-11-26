@@ -1,9 +1,20 @@
+const std = @import("std");
+var prng = std.rand.DefaultPrng.init(0);
+const rand = prng.random();
+
 pub fn modifier(score: i8) i8 {
     return @divFloor(score - 10, 2);
 }
 
 pub fn ability() i8 {
-    return 3;
+    var candidates = [_]i8 {
+        rand.intRangeAtMost(i8, 1, 6),
+        rand.intRangeAtMost(i8, 1, 6),
+        rand.intRangeAtMost(i8, 1, 6),
+        rand.intRangeAtMost(i8, 1, 6),
+    };
+    std.mem.sort(i8, &candidates, {}, comptime std.sort.desc(i8));
+    return candidates[0] + candidates[1] + candidates[2];
 }
 
 pub const Character = struct {
@@ -16,15 +27,13 @@ pub const Character = struct {
     hitpoints: i8,
 
     pub fn init() Character {
-        var ret = Character {
-            .strength = 3,
-            .dexterity = 3,
-            .constitution = 3,
-            .intelligence = 3,
-            .wisdom = 3,
-            .charisma = 3,
-            .hitpoints = 3,
-        };
+        var ret: Character = undefined;
+        ret.strength = ability();
+        ret.dexterity = ability();
+        ret.constitution = ability();
+        ret.intelligence = ability();
+        ret.wisdom = ability();
+        ret.charisma = ability();
         ret.hitpoints = 10 + modifier(ret.constitution);
         return ret;
     }
