@@ -7,7 +7,7 @@ square_root:
     mov ecx, edi        ; r = n
 .loop:
     cmp eax, ecx
-    jg .done            ; if l > r
+    jg .found            ; if l > r
     mov edx, eax
     add edx, ecx
     shr edx, 1          ; m = (l+r)/2
@@ -15,7 +15,7 @@ square_root:
     mov r8d, edx
     imul r8, r8 
     cmp r8d, edi
-    je .found
+    je .found           ; m = n, search no more
     jb .next_right      ; m below n, search right
     ja .next_left       ; m above n, search left
 .next_left:
