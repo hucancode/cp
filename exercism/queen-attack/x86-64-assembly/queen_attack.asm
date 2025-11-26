@@ -16,29 +16,25 @@ can_create:
     ret
 global can_attack
 can_attack:
-    ; same row or column
+    ; same row or same column
     cmp edi, edx
-    je .true
+    je  .true
     cmp esi, ecx
-    je .true
-    ; abs(row diff) in eax
+    je  .true
+    ; row_diff = edi - edx
     mov eax, edi
     sub eax, edx
-    cdq
-    xor eax, edx
-    sub eax, edx
-    ; abs(col diff) in edx
+    ; col_diff = esi - ecx
     mov edx, esi
     sub edx, ecx
-    mov ecx, edx
-    sar ecx, 31
-    xor edx, ecx
-    sub edx, ecx
-    ; diagonal check
+    ; diagonal check: row_diff == col_diff  OR row_diff == -col_diff
     cmp eax, edx
-    je .true
+    je  .true
+    neg edx
+    cmp eax, edx
+    je  .true
 .false:
-    mov eax, 0
+    xor eax, eax
     ret
 .true:
     mov eax, 1
