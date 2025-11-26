@@ -1,11 +1,10 @@
+const ascii = @import("std").ascii;
+
 pub const SeriesError = error{
     InvalidCharacter,
     NegativeSpan,
     InsufficientDigits,
 };
-
-const math = @import("std").math;
-const ascii = @import("std").ascii;
 
 pub fn largestProduct(digits: []const u8, span: i32) SeriesError!u64 {
     if (span < 0) {
