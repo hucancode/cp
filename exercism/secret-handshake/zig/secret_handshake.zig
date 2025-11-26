@@ -12,7 +12,7 @@ pub fn calculateHandshake(allocator: mem.Allocator, number: u5) mem.Allocator.Er
     var i: usize = 0;
     var ret = try allocator.alloc(Signal, n);
     for (0..4) |b| {
-        const mask = @as(u5, @intCast(1)) << @as(u3, @intCast(b));
+        const mask = @as(u5, 1) << @as(u3, @intCast(b));
         if (number & mask != 0) {
             ret[i] = @enumFromInt(b);
             i += 1;
