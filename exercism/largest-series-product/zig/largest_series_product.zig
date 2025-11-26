@@ -5,6 +5,7 @@ pub const SeriesError = error{
 };
 
 const math = @import("std").math;
+const ascii = @import("std").ascii;
 
 pub fn largestProduct(digits: []const u8, span: i32) SeriesError!u64 {
     if (span < 0) {
@@ -17,7 +18,7 @@ pub fn largestProduct(digits: []const u8, span: i32) SeriesError!u64 {
         return SeriesError.InsufficientDigits;
     }
     for (digits) |d| {
-        if (d < '0' or d > '9') {
+        if (!ascii.isDigit(d)) {
             return SeriesError.InvalidCharacter;
         }
     }
