@@ -13,12 +13,12 @@ reverse:
     inc rax
     jmp .find_terminal
 .loop:
-    cmp rsi, rax           ; if rsi == rax
+    cmp rsi, rax           ; if rsi >= rax
     jge .done              ; finish
-    mov cl, [rsi]          ; cl = str[rsi]
-    mov ch, [rax]          ; ch = str[rax]
-    mov [rsi], ch          ; str[rsi] = ch
-    mov [rax], cl          ; str[rax] = cl
+    mov cl, [rsi]          ; cl = *rsi
+    mov ch, [rax]          ; ch = *rax
+    mov [rsi], ch          ; *rsi = ch
+    mov [rax], cl          ; *rax = cl
     inc rsi
     dec rax
     jmp .loop
