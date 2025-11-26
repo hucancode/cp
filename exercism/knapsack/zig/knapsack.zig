@@ -14,18 +14,20 @@ pub fn maximumValue(allocator: mem.Allocator, maximumWeight: usize, items: []con
     const n = maximumWeight+1;
     var f = try allocator.alloc(usize, n);
     @memset(f[0..n], 0);
+    var g = try allocator.alloc(usize, n);
+    g[0] = 0;
     defer allocator.free(f);
+    defer allocator.free(g);
     for (items) |item| {
-        var g = try allocator.alloc(usize, n);
-        g[0] = 0;
         for (1..n) |i| {
             g[i] = @max(f[i], g[i-1]);
             if (item.weight <= i) {
                 g[i] = @max(g[i], f[i-item.weight]+item.value);
             }
         }
-        allocator.free(f);
+        const tmp = f;
         f = g;
+        g = tmp;
     }
     return f[maximumWeight];
 }
