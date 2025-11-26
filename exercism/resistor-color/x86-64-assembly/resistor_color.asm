@@ -1,7 +1,5 @@
 default rel
 section .data
-    bands:
-        dq black, brown, red, orange, yellow, green, blue, violet, grey, white, 0
     black: db "black", 0
     brown: db "brown", 0  
     red: db "red", 0
@@ -12,6 +10,7 @@ section .data
     violet: db "violet", 0
     grey: db "grey", 0
     white: db "white", 0
+    bands: dq black, brown, red, orange, yellow, green, blue, violet, grey, white, 0
 section .text
 global color_code
 color_code:
@@ -24,11 +23,11 @@ color_code:
     je .done
 .loop_str:
     mov dl, [rdi+rbx]          ; dl = bands[i][j]
-    mov dh, [rcx+rbx]          ; el = color[j]
-    cmp dl, dh                 
+    mov dh, [rcx+rbx]          ; dh = color[j]
+    cmp dl, dh
     jne .next_band             ; if el != dl, compare next band
     cmp dl, 0
-    je .done                   ; if dl != 0, continue
+    je .done                   ; if dl == 0, return
 .next_char:
     inc rbx
     jmp .loop_str
