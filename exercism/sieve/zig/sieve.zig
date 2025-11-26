@@ -7,16 +7,14 @@ pub fn primes(buffer: []u32, limit: u32) []u32 {
     @memset(isPrime, true);
     defer allocator.free(isPrime);
     for (2..limit+1) |i| {
-        if (isPrime[i]) {
-            buffer[n] = @as(u32, @truncate(i));
-            n += 1;
-            const j = limit/i+1;
-            if (j < 2) {
-                continue;
-            }
-            for (2..j) |k| {
-                isPrime[i*k] = false;
-            }
+        if (!isPrime[i]) {
+            continue;
+        }
+        buffer[n] = @as(u32, @truncate(i));
+        n += 1;
+        const j = limit/i+1;
+        for (2..j) |k| {
+            isPrime[i*k] = false;
         }
     }
     return buffer[0..n];
