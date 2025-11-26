@@ -1,6 +1,6 @@
-section .data
+section .rodata
     earth_seconds_per_year dd 31557600.0
-    orbital_periods:
+    multipliers:
         dd 0.2408467    ; MERCURY
         dd 0.61519726   ; VENUS
         dd 1.0          ; EARTH
@@ -16,12 +16,12 @@ age:
     ; esi = seconds
     cvtsi2ss xmm0, esi
     movss xmm1, [rel earth_seconds_per_year]
-    divss xmm0, xmm1 ; seconds /= earth_seconds_per_year
-    lea rax, [rel orbital_periods] ; rax = &orbital_periods
+    divss xmm0, xmm1            ; seconds /= earth_seconds_per_year
+    lea rax, [rel multipliers]  ; rax = &multipliers
     mov edx, edi                ; eax = planet index
     imul edx, 4                 ; eax *= 4 (4 bytes per float)
-    movss xmm1, [rax + rdx]  ; xmm1 = orbital_periods[planet]
-    divss xmm0, xmm1 ; xmm0 /= xmm1
+    movss xmm1, [rax + rdx]     ; xmm1 = *(multipliers + planet)
+    divss xmm0, xmm1            ; xmm0 /= xmm1
 .done:
     ret
 
