@@ -13,9 +13,8 @@ pub const Item = struct {
 pub fn maximumValue(allocator: mem.Allocator, maximumWeight: usize, items: []const Item) !usize {
     const n = maximumWeight+1;
     var f = try allocator.alloc(usize, n);
-    for(0..n) |i| {
-        f[i] = 0;
-    }
+    @memset(f[0..n], 0);
+    defer allocator.free(f);
     for (items) |item| {
         var g = try allocator.alloc(usize, n);
         g[0] = 0;
@@ -28,7 +27,5 @@ pub fn maximumValue(allocator: mem.Allocator, maximumWeight: usize, items: []con
         allocator.free(f);
         f = g;
     }
-    const ret = f[maximumWeight];
-    allocator.free(f);
-    return ret;
+    return f[maximumWeight];
 }
