@@ -11,21 +11,12 @@ pub fn calculateHandshake(allocator: mem.Allocator, number: u5) mem.Allocator.Er
     const n: usize = @popCount(number & 0b1111);
     var i: usize = 0;
     var ret = try allocator.alloc(Signal, n);
-    if (number & 1<<0 != 0) {
-        ret[i] = Signal.wink;
-        i += 1;
-    }
-    if ((number & 1<<1) != 0) {
-        ret[i] = Signal.double_blink;
-        i += 1;
-    }
-    if ((number & 1<<2) != 0) {
-        ret[i] = Signal.close_your_eyes;
-        i += 1;
-    }
-    if ((number & 1<<3) != 0) {
-        ret[i] = Signal.jump;
-        i += 1;
+    for (0..4) |b| {
+        const mask = @as(u5, @intCast(1)) << @as(u3, @intCast(b));
+        if (number & mask != 0) {
+            ret[i] = @enumFromInt(b);
+            i += 1;
+        }
     }
     if ((number & 1<<4) != 0) {
         for (0..n/2) |j| {
