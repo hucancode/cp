@@ -3,7 +3,8 @@ const bufPrint = std.fmt.bufPrint;
 
 const nums = [_][]const u8{"no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"};
 const cnums =[_][]const u8{"no", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"};
-pub fn recite(buffer: []u8, start_bottles: u32, take_down: u32) []const u8 {
+
+pub fn recite(buffer: []u8, start_bottles: u32, take_down: u32) ![]const u8 {
     var n: usize = 0;
     for(0..take_down) |i| {
         const j = start_bottles - i;
