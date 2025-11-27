@@ -49,7 +49,7 @@ fn generate_verse(i: usize, buffer: []u8, idx: *usize) void {
         animal = node.next;
     }
 }
-pub fn recite(buffer: []u8, i: usize, j: usize) []const u8 {
+pub fn recite(buffer: []u8, i: usize, j: usize) ![]const u8 {
     var idx: usize = 0;
     for (i - 1..j) |k| {
         generate_verse(k, buffer, &idx);
