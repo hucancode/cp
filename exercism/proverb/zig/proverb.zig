@@ -3,11 +3,14 @@ const fmt = std.fmt;
 const bufPrint = fmt.bufPrint;
 const mem = std.mem;
 
-pub fn recite(allocator: mem.Allocator, words: []const []const u8) (fmt.AllocPrintError || mem.Allocator.Error)![][]u8 {
+pub fn recite(allocator: mem.Allocator, words: []const []const u8) mem.Allocator.Error![][]u8 {
     var ret = try allocator.alloc([]u8, words.len);
-    if (words.len == 0) {
-        return ret;
+    for (ret) |*line| line.* = &[_]u8{};
+    errdefer {
+        for (ret) |line| if (line.len != 0) allocator.free(line);
+        allocator.free(ret);
     }
+    if (words.len == 0) return ret;
     for(0..words.len-1) |i| {
         const n = "For want of a  the  was lost.\n".len + words[i].len + words[i+1].len;
         ret[i] = try allocator.alloc(u8, n);
