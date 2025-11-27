@@ -3,6 +3,11 @@ const mem = std.mem;
 
 pub fn rows(allocator: mem.Allocator, count: usize) mem.Allocator.Error![][]u128 {
     var ret = try allocator.alloc([]u128, count);
+    for (ret) |*row| row.* = &[_]u128{};
+    errdefer {
+        for (ret) |row| if (row.len > 0) allocator.free(row);
+        allocator.free(ret);
+    }
     if (count < 1) {
         return ret;
     }
