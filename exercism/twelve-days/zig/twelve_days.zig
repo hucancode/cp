@@ -56,7 +56,7 @@ const days = [12]Day {
 const std = @import("std");
 const bufPrint = std.fmt.bufPrint;
 
-pub fn recite(buffer: []u8, start_verse: u32, end_verse: u32) []const u8 {
+pub fn recite(buffer: []u8, start_verse: u32, end_verse: u32) ![]const u8 {
     var n: usize = 0;
     for(start_verse-1..end_verse) |i| {
         n += (bufPrint(buffer[n..], "On the {s} day of Christmas my true love gave to me: ", .{days[i].name}) catch buffer[0..0]).len;
