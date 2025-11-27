@@ -5,25 +5,32 @@ const mem = std.mem;
 /// Caller owns the returned memory.
 pub fn countWords(allocator: mem.Allocator, s: []const u8) !std.StringHashMap(u32) {
     var ret = std.StringHashMap(u32).init(allocator);
-    var it = mem.tokenize(u8, s, " ,.\n");
+    errdefer {
+        var it = ret.keyIterator();
+        while (it.next()) |key_ptr| {
+            allocator.free(key_ptr.*);
+        }
+        ret.deinit();
+    }
+    var it = mem.tokenizeAny(u8, s, " ,.\n");
     while (it.next()) |k| {
         if (k.len == 0) continue;
         const sanitized = trimAround(k);
         if (sanitized.len == 0) continue;
         const normalized = try allocator.alloc(u8, sanitized.len);
+        errdefer allocator.free(normalized);
         _ = std.ascii.lowerString(normalized, sanitized);
-        const v = ret.get(normalized);
-        if (v == null) {
-            try ret.put(normalized, 1);
-            // we need to not free `normalized` here, it is needed in the hashmap
+        const entry = try ret.getOrPut(normalized);
+        if (entry.found_existing) {
+            allocator.free(normalized); // not used
+            entry.value_ptr.* += 1;
         } else {
-            try ret.put(normalized, v.? + 1);
-            allocator.free(normalized);
-            // a copy of `normalized` is freed here, the hashmap has it own copy
+            entry.value_ptr.* = 1;
         }
     }
     return ret;
 }
+
 fn trimAround(token: []const u8) []const u8 {
     const trimChars = "'\"()!&@$%^:";
     var start: u64 = 0;
