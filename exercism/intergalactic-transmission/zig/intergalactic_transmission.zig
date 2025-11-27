@@ -10,7 +10,8 @@ pub fn transmitSequence(allocator: mem.Allocator, message: []const u8) mem.Alloc
         return try allocator.alloc(u8, 0);
     }
     const n = message.len + message.len / 8 + 1;
-    var ret = try allocator.alloc(u8, n);
+    const ret = try allocator.alloc(u8, n);
+    errdefer allocator.free(ret);
     var bit: usize = 0;
     while (bit < message.len * 8) : (bit += 7) {
         const i = bit / 8;
@@ -33,13 +34,13 @@ pub fn decodeMessage(allocator: mem.Allocator, message: []const u8) (mem.Allocat
         return try allocator.alloc(u8, 0);
     }
     const n = (message.len * 8 - message.len) / 8;
-    var ret = try allocator.alloc(u8, n);
+    const ret = try allocator.alloc(u8, n);
+    errdefer allocator.free(ret);
     @memset(ret, 0);
     var bit: usize = 0;
     while (bit < ret.len * 8) : (bit += 7) {
         var x = message[bit/7];
         if (@popCount(x) & 1 != 0) {
-            allocator.free(ret);
             return TransmissionError.WrongParity;
         }
         x &= 0xfe;
