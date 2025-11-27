@@ -5,7 +5,7 @@ const mem = std.mem;
 /// Caller owns the returned memory.
 pub fn countWords(allocator: mem.Allocator, s: []const u8) !std.StringHashMap(u32) {
     var ret = std.StringHashMap(u32).init(allocator);
-    var it = mem.tokenize(u8, s, " ,.\n");
+    var it = mem.tokenizeAny(u8, s, " ,.\n");
     while (it.next()) |k| {
         if (k.len == 0) continue;
         const sanitized = trimAround(k);
